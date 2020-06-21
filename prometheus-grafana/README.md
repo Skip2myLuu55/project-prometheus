@@ -1,1 +1,1 @@
-# project-prometheus
+# prometheus-grafana
