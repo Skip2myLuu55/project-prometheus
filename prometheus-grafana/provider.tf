@@ -14,44 +14,44 @@ resource "aws_vpc" "project1" {
 resource "aws_subnet" "public1" {
   vpc_id     = "${aws_vpc.project1.id}"
   cidr_block = "10.0.1.0/24"
-tags = {
-  name = "public1"
+  tags = {
+    Name = "public1"
   }
 }
 resource "aws_subnet" "public2" {
   vpc_id     = "${aws_vpc.project1.id}"
   cidr_block = "10.0.2.0/24"
-tags = {
-  name = "public2"
+  tags = {
+    Name = "public2"
   }
 }
 resource "aws_subnet" "public3" {
   vpc_id     = "${aws_vpc.project1.id}"
   cidr_block = "10.0.3.0/24"
-tags = {
-  name = "public3"
+  tags = {
+    Name = "public3"
   }
 }
 #creating private subnets
 resource "aws_subnet" "private1" {
- vpc_id     = "${aws_vpc.project1.id}"
+  vpc_id     = "${aws_vpc.project1.id}"
   cidr_block = "10.0.11.0/24"
- tags = {
-  name = "private1"
+  tags = {
+    Name = "private1"
   }
 }
 resource "aws_subnet" "private2" {
   vpc_id     = "${aws_vpc.project1.id}"
   cidr_block = "10.0.22.0/24"
-tags = {
-  name = "private2"
+  tags = {
+    Name = "private2"
   }
 }
 resource "aws_subnet" "private3" {
   vpc_id     = "${aws_vpc.project1.id}"
   cidr_block = "10.0.33.0/24"
-tags = {
-  name = "private3"
+  tags = {
+    Name = "private3"
   }
 }
 #define Internet Gateway
