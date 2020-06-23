@@ -1,5 +1,6 @@
 resource "aws_security_group" "pro_graf_security" {
   name = "pro_graf_security"
+  vpc_id     = "${aws_vpc.project1.id}"
   description = "Allow inbound traffic"
 
   ingress {
@@ -41,3 +42,4 @@ resource "aws_security_group" "pro_graf_security" {
     Name = "pro_graf_security"
   }
 }
+
