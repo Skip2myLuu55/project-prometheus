@@ -4,7 +4,7 @@ resource "aws_key_pair" "deployer" {
 }
 
 
-resource "aws_instance" "Node1" {
+resource "aws_instance" "node1" {
   ami           = "${data.aws_ami.centos7.id}"
   key_name      = "${aws_key_pair.deployer.key_name}"
   subnet_id = "${aws_subnet.public1.id}"
@@ -23,7 +23,7 @@ resource "aws_instance" "Node1" {
   }
 }
 
-# resource "aws_instance" "Node2" {
+# resource "aws_instance" "node2" {
 #   ami           = "${data.aws_ami.centos7.id}"
 #   key_name      = "${aws_key_pair.deployer.key_name}"
 #   security_groups  = ["${aws_security_group.pro_graf_security.name}"]
@@ -41,7 +41,7 @@ resource "aws_instance" "Node1" {
 #   }
 # }
 
-# resource "aws_instance" "Node3" {
+# resource "aws_instance" "node3" {
 #   ami           = "${data.aws_ami.centos7.id}"
 #   key_name      = "${aws_key_pair.deployer.key_name}"
 #   security_groups  = ["${aws_security_group.pro_graf_security.name}"]
@@ -59,7 +59,7 @@ resource "aws_instance" "Node1" {
 #   }
 # }
 
-# resource "aws_instance" "Node4" {
+# resource "aws_instance" "node4" {
 #   ami           = "${data.aws_ami.centos8.id}"
 #   key_name      = "${aws_key_pair.deployer.key_name}"
 #   security_groups  = ["${aws_security_group.pro_graf_security.name}"]

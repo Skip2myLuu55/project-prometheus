@@ -19,8 +19,6 @@ data "aws_ami" "centos7" {
 }
 
 
-
-
 output "CENTOS7_AMI_ID" {
     value = "${data.aws_ami.centos7.id}"
 }
