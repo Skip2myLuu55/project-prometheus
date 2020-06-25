@@ -2,7 +2,7 @@
 #Find Centos 7 AMI in any region:
 ###############################
 
-data "aws_ami" "centos7" {
+data "aws_ami" "centos" {
   most_recent = true
 
   filter {
