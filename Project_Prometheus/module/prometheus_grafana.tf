@@ -1,14 +1,10 @@
- resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
-  public_key = "${file("~/.ssh/id_rsa.pub")}"
-}
 resource "aws_instance" "web" {
   ami         = "${data.aws_ami.amazon.id}"
   subnet_id   = "${aws_subnet.public1.id}"
   iam_instance_profile = "${aws_iam_instance_profile.prometheus_profile.name}"
   key_name      = "${aws_key_pair.deployer.key_name}"
   vpc_security_group_ids = ["${aws_security_group.pro_graf_security.id}"]
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
   provisioner   "remote-exec" {
     connection {
         host        = "${self.public_ip}"
@@ -49,7 +45,7 @@ resource "aws_instance" "web" {
         user        = "ec2-user"
         private_key = "${file("~/.ssh/id_rsa")}"
     }
-    source  =  "./configuration_files/prometheus_configs/prometheus.yml"
+    source  =  "./module/configurations/prometheus_configs/prometheus.yml"
     destination = "/tmp/prometheus.yml"
   },
   depends_on = ["aws_instance.web"]
@@ -60,7 +56,7 @@ resource "aws_instance" "web" {
         user        = "ec2-user"
         private_key = "${file("~/.ssh/id_rsa")}"
     }
-    source  =  "./configuration_files/prometheus_configs/prometheus.service"
+    source  =  "./module/configurations/prometheus_configs/prometheus.service"
     destination = "/tmp/prometheus.service"
   },
   depends_on = ["aws_instance.web"]
@@ -93,7 +89,7 @@ resource "aws_instance" "web" {
         user        = "ec2-user"
         private_key = "${file("~/.ssh/id_rsa")}"
     }
-    source  =  "./configuration_files/grafan_config/grafana.repo"
+    source  =  "./module/configurations/grafan_config/grafana.repo"
     destination = "/tmp/grafana.repo"
   },
   depends_on = ["aws_instance.web"]
@@ -117,8 +113,61 @@ resource "aws_instance" "web" {
      "sudo systemctl enable grafana-server.service",
      "sudo systemctl status grafana-server"
     ]
+  },
+  provisioner   "remote-exec" {
+    connection {
+        host        = "${self.public_ip}"
+        type        = "ssh"
+        user        = "ec2-user"
+        private_key = "${file("~/.ssh/id_rsa")}"
+    }
+    inline = [
+      "sudo yum update -y",
+      "sudo yum install wget -y",
+      # Add users 
+      "sudo useradd --no-create-home --shell /bin/false prometheus",
+      "sudo mkdir -p /etc/prometheus",
+      "sudo mkdir -p /var/lib/prometheus",
+      "sudo chown prometheus:prometheus /etc/prometheus",
+      "sudo chown prometheus:prometheus /var/lib/prometheus",
+      # Installs node exporter 
+      "wget https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz",
+      "tar xvfz node_exporter-0.18.1.linux-amd64.tar.gz",
+    ]
+  },
+   depends_on = ["aws_instance.web"]
+  provisioner   "file" {
+    connection {
+        host        = "${aws_instance.web.public_ip}"
+        type        = "ssh"
+        user        = "ec2-user"
+        private_key = "${file("~/.ssh/id_rsa")}"
+    }
+    source  =  "./module/configurations/prometheus_configs/node_exporter.service"
+    destination = "/tmp/node_exporter.service"
+  },
+  depends_on = ["aws_instance.web"]
+  provisioner   "remote-exec" {
+    connection {
+        host        = "${aws_instance.web.public_ip}"
+        type        = "ssh"
+        user        = "ec2-user"
+        private_key = "${file("~/.ssh/id_rsa")}"
+    }
+    inline = [
+      "sudo mv node_exporter-0.18.1.linux-amd64 /etc/prometheus/node_exporter",
+      # change ownership to prometheus
+      "sudo chown -R prometheus:prometheus /etc/prometheus/node_exporter",
+      # move service file to /etc folder and change ownership to root
+      "sudo mv /tmp/node_exporter.service /etc/systemd/system/node_exporter.service",
+      "sudo chown root:root /etc/systemd/system/node_exporter.service",
+      # start and enable services
+      "sudo systemctl daemon-reload", 
+      "sudo systemctl start node_exporter",
+      "sudo systemctl enable node_exporter",
+      "sudo systemctl status node_exporter"
+    ]
   }
-
   tags = {
     Name = "Prometheus_Grafana Server"
   }

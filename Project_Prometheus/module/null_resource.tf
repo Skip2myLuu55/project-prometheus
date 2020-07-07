@@ -1,4 +1,4 @@
-# resource "null_resource" "mine" {
+#   resource "null_resource" "mine" {
 #     triggers = {
 #         always_run = "${timestamp()}"
 #     }    
@@ -11,12 +11,8 @@
 #         private_key = "${file("~/.ssh/id_rsa")}"
 #     }
 #     inline = [
-#       "sudo yum install -y epel-release -y",
-#       "sudo yum install httpd -y",
-#       "sudo systemctl start httpd",
-#       "sudo systemctl enable httpd",
-#       "sudo yum install telnet -y",
-#       "sudo useradd bob"
+#      "sudo yum update -y "
 #     ]
 #   }
 # }
+

@@ -47,7 +47,6 @@ resource "aws_security_group" "pro_graf_security" {
   }
 }
 
-
 resource "aws_security_group" "pro_node_security" {
   name        = "pro_node_security"
   description = "Allow inbound traffic"
